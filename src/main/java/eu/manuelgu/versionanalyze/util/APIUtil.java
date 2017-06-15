@@ -10,7 +10,16 @@ import org.json.JSONObject;
 public class APIUtil {
 
     /**
-     * Get the fully qualified version name by the protocol version number.
+     * Get the fully qualified version name by the protocol version number.<br><br>
+     *
+     * Request format:<br>
+     * <code>
+     *     POST {url}<br>
+     *     Content-Type: application/json<br>
+     *     <br>
+     *     {'protocol_version': 42}
+     * </code>
+     *
      *
      * @param protocolVersionNumber The protocol version number of the requested version
      * @return A fully qualified name of the version (e.g. 1.11.2)
