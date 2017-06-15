@@ -1,6 +1,7 @@
 package eu.manuelgu.versionanalyze;
 
 import com.google.common.io.ByteStreams;
+import eu.manuelgu.versionanalyze.commands.PlayerVersionCommand;
 import eu.manuelgu.versionanalyze.database.Redis;
 import eu.manuelgu.versionanalyze.listeners.EventListener;
 import lombok.Getter;
@@ -54,12 +55,15 @@ public class VersionAnalyzePlugin extends Plugin {
         // Parse config values
         apiUrl = getConfig().getString("api-url", "");
 
+        // Register listeners
+        getProxy().getPluginManager().registerListener(this, new EventListener(this));
+
+        // Register commands
+        getProxy().getPluginManager().registerCommand(this, new PlayerVersionCommand());
+
         // Initialize Redis db
         redis = initRedis();
         redis.initialize();
-
-        // Register listeners
-        getProxy().getPluginManager().registerListener(this, new EventListener(this));
     }
 
     /**
