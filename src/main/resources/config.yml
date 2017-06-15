@@ -1,0 +1,6 @@
+api-url: ""
+redis:
+  host: 127.0.0.1
+  port: 6370
+  timeout: 5000
+  auth: s3cr3t_k3y
