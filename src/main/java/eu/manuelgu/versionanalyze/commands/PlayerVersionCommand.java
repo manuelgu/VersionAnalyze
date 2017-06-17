@@ -1,6 +1,7 @@
 package eu.manuelgu.versionanalyze.commands;
 
-import eu.manuelgu.versionanalyze.util.APIUtil;
+import eu.manuelgu.versionanalyze.VersionAnalyzePlugin;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -9,9 +10,13 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class PlayerVersionCommand extends Command {
+    @Getter
+    private final VersionAnalyzePlugin plugin;
 
-    public PlayerVersionCommand() {
+    public PlayerVersionCommand(VersionAnalyzePlugin plugin) {
         super("playerversion", "versionanalyze.playerversion", "");
+
+        this.plugin = plugin;
     }
 
     @Override
@@ -29,14 +34,10 @@ public class PlayerVersionCommand extends Command {
         }
 
         int protocolVersion = player.getPendingConnection().getVersion();
-        String version = APIUtil.getVersionByProtocolVersion(protocolVersion);
-        if (version == null) {
-            cs.sendMessage(new ComponentBuilder("Failed to fetch version").color(ChatColor.RED).create());
-            return;
-        }
+        String version = String.valueOf(protocolVersion);
 
         cs.sendMessage(new ComponentBuilder(player.getName()).color(ChatColor.DARK_GREEN)
-                .append(" is using Minecraft ").color(ChatColor.GREEN)
+                .append(" is using Minecraft with protocol version ").color(ChatColor.GREEN)
                 .append(version).color(ChatColor.DARK_GREEN)
                 .create());
     }

@@ -1,7 +1,6 @@
 package eu.manuelgu.versionanalyze.listeners;
 
 import eu.manuelgu.versionanalyze.VersionAnalyzePlugin;
-import eu.manuelgu.versionanalyze.util.APIUtil;
 import lombok.Getter;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -21,14 +20,11 @@ public class EventListener implements Listener {
     public void onPostLogin(PostLoginEvent event) {
         getPlugin().getProxy().getScheduler().runAsync(getPlugin(), () -> {
             int protocolVersion = event.getPlayer().getPendingConnection().getVersion();
+            String versionName = String.valueOf(protocolVersion);
 
-            String versionName = APIUtil.getVersionByProtocolVersion(protocolVersion);
-
-            if (versionName != null) {
-                try (Jedis jedis = getPlugin().getRedis().getJedis().getResource()) {
-                    // Set uuid:versionName
-                    jedis.set(event.getPlayer().getUniqueId().toString(), versionName);
-                }
+            try (Jedis jedis = getPlugin().getRedis().getJedis().getResource()) {
+                // Add uuid to set with name of protocolversion
+                jedis.sadd(versionName, event.getPlayer().getUniqueId().toString());
             }
         });
     }
@@ -36,9 +32,12 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerDisconnect(PlayerDisconnectEvent event) {
         getPlugin().getProxy().getScheduler().runAsync(getPlugin(), () -> {
+            int protocolVersion = event.getPlayer().getPendingConnection().getVersion();
+            String versionName = String.valueOf(protocolVersion);
+
             try (Jedis jedis = getPlugin().getRedis().getJedis().getResource()) {
-                // Remove value that contained version
-                jedis.del(event.getPlayer().getUniqueId().toString());
+                // Remove uuid from set
+                jedis.srem(versionName, event.getPlayer().getUniqueId().toString());
             }
         });
     }

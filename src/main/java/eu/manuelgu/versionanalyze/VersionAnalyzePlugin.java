@@ -26,20 +26,10 @@ public class VersionAnalyzePlugin extends Plugin {
     private Redis redis;
 
     /**
-     * The URL of the API
-     */
-    @Getter
-    private String apiUrl;
-
-    /**
      * The configuration for this plugin
      */
     @Getter
     private Configuration config;
-
-    public static VersionAnalyzePlugin get() {
-        return instance;
-    }
 
     @Override
     public void onEnable() {
@@ -52,14 +42,11 @@ public class VersionAnalyzePlugin extends Plugin {
             getLogger().warning("Error while loading config - " + e.getMessage());
         }
 
-        // Parse config values
-        apiUrl = getConfig().getString("api-url", "");
-
         // Register listeners
         getProxy().getPluginManager().registerListener(this, new EventListener(this));
 
         // Register commands
-        getProxy().getPluginManager().registerCommand(this, new PlayerVersionCommand());
+        getProxy().getPluginManager().registerCommand(this, new PlayerVersionCommand(this));
 
         // Initialize Redis db
         redis = initRedis();
